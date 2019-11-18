@@ -447,7 +447,7 @@ areas_method1 = area_of_circle(radii)
 end = Sys.time()
 
 end - start </code></pre>
-<pre><code>## Time difference of 0.004391909 secs</code></pre>
+<pre><code>## Time difference of 0.00484395 secs</code></pre>
 </div>
 <div id="b.-sapply" class="section level4">
 <h4>B. sapply()</h4>
@@ -458,7 +458,7 @@ areas_method2 = sapply(radii, area_of_circle)
 end = Sys.time()
 
 end - start </code></pre>
-<pre><code>## Time difference of 0.08914495 secs</code></pre>
+<pre><code>## Time difference of 0.08177805 secs</code></pre>
 </div>
 <div id="c.-for-loop" class="section level4">
 <h4>C. for loop</h4>
@@ -472,7 +472,7 @@ for (i in 1:length(radii)){
 end = Sys.time()
 
 end - start </code></pre>
-<pre><code>## Time difference of 0.06706595 secs</code></pre>
+<pre><code>## Time difference of 0.07420206 secs</code></pre>
 <p>To summarize:</p>
 <ul>
 <li><p>vectorized code is faster than sapply() and for loops</p></li>
