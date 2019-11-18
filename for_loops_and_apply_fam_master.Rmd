@@ -478,24 +478,57 @@ head(avg_rating_per_title)
 ```
 
 ### 5. Looping over a matrix/data.frame: apply()
+Now let's play with apply statements with another dataset -- bacterial growth curve data. 
+
 #### Growth curve example 
 
 ```{r}
 growth = read.csv('data/mock_growth_curve_data.csv', row.names = 1)
 ```
 
-Taking the mean at each timepoint 
+Let's take a look at how the data is organized. We have 8 wells growing bacteria, where each well is a column. Rows indicate time, and time was taken every 15 minutes. 
 ```{r}
-apply(growth, 1, mean)
+head(growth)
 ```
 
-Plotting with apply
+
+Say we want to take the mean at each timepoint. We can use apply, loop over the rows (1), and use the function mean()
 ```{r}
-plot(row.names(growth), growth$Well1, type = 'l')
+mean_growth = apply(growth, 1, mean)
+```
+
+```{r}
+plot(row.names(growth), mean_growth, type = 'l', ylab = 'OD', xlab = 'Time (min)', main = 'Average growth')
+```
+
+
+We can also plot our curves with apply. Here, we can plot each well on its own plot.  
+```{r}
+apply(growth, 2, function(col){
+  plot(row.names(growth), col, type = 'l', ylab = 'OD', xlab = 'Time (min)')
+})
+```
+
+We can also plot all curves on the same plot 
+```{r}
+plot(row.names(growth), growth$Well1, type = 'l', ylab = 'OD', xlab = 'Time (min)')
 apply(growth, 2, function(col){
   lines(row.names(growth), col)
 })
 ```
+
+It looks like there are two growth patterns. Let's explore by plotting the max difference at each time point. 
+```{r}
+max_difference = apply(growth, 1, function(row){
+  max(row) - min(row)
+})
+```
+
+
+```{r}
+plot(row.names(growth), max_difference, type = 'l', ylab = 'max OD difference', xlab = 'Time (min)')
+```
+
 
 ### 6. Faster looping with future.apply 
 Here's a [Data Camp tutorial](https://campus.datacamp.com/courses/parallel-programming-in-r/foreach-futureapply-and-load-balancing?ex=9) to learn more about paralell programming in R -- specifically future and future.apply()
