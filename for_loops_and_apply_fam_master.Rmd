@@ -9,7 +9,332 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+### 1. R basics - vectors, matrices, lists, logicals 
+
+#### A. Vectors - 1D arrays: 
+
+##### Initialize a vector 
 ```{r}
+my_vec = c(1,2,3,4,5,6,7,8,9,10)
+my_vec = 1:10 
+```
+
+##### Initialize an empty vector 
+```{r}
+my_vec = vector(mode = 'numeric', length = 10 )
+my_vec
+```
+
+#### B. Matrices/data frames - 2D arrays: 
+
+##### Initialize a matrix
+```{r}
+my_mat = matrix(1:10, ncol = 2, nrow = 5)
+my_mat
+
+colnames(my_mat) = c('A', 'B')
+row.names(my_mat) = c('Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5')
+
+my_mat 
+
+# dimensions of my_mat
+dim(my_mat)
+
+#column names of my_mat 
+colnames(my_mat)
+
+#row names of my_mat
+rownames(my_mat)
+```
+
+##### Access rows/columns in matrices 
+my_mat[row, column]
+```{r}
+# row 2, column 1
+my_mat[2,1]
+```
+
+```{r}
+# row 2, column 1
+my_mat['Sample2','A']
+```
+
+```{r}
+# all rows, 2nd column
+my_mat[,2]
+```
+
+```{r}
+# all columns, 1st row
+my_mat[1,]
+```
+
+##### C. Data frames 
+
+```{r}
+my_df = data.frame(A = c(1,2,3,4,5), B = c(6,7,8,9,10), row.names = c('Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5'))
+
+my_df
+
+class(my_df)
+```
+
+Indexing dataframes is the same, but you can also index the columns using the $ 
+```{r}
+# 3 ways to access column A 
+my_df[,'A']
+my_df[,1]
+my_df$A #can't do this with matrices! 
+```
+
+#### D. Lists
+Each element of a list can contain vectors, matrices, lists, etc. of any shape or size. 
+```{r}
+my_list = list(my_vec, my_mat, my_df)
+```
+
+##### Accessing element of a list 
+```{r}
+my_list[[1]]
+```
+
+##### Subsetting a list
+```{r}
+my_list[c(1,3)]
+```
+
+
+
+
+#### E. Subsetting with logicals 
+```{r}
+sample_source = c('cat', 'dog', 'cat', 'cat', 'dog')
+length(sample_source)
+dim(my_df)
+```
+
+```{r}
+sample_source == 'cat'
+```
+
+```{r}
+my_df$A[sample_source == 'cat']
+```
+
+```{r}
+my_df[sample_source == 'dog',]
+```
+
+Often, you won't be initializing matrices and dataframes, but rather, reading them in from an excel or csv. 
+
+
+### 2. Iterating through vectors and matrices with for loops 
+#### A. Structure of a for loop 
+
+for (thing in sequence){
+
+  do thing
+  
+}
+
+#### B. Examples 
+
+```{r}
+colors = c('red', 'blue', 'green')
+```
+
+Iterating through a vector 
+```{r}
+for (i in 1:length(colors)){ 
+
+  print(colors[i])
+  
+}
+```
+
+Iterating through indexing 
+```{r}
+for (thing in colors){ 
+
+  print(thing)
+  
+}
+```
+
+
+### 3. Vectorized vs. sapply vs. for loop 
+
+```{r}
+# Vector of circle radii 
+radii = 1:100000
+```
+
+```{r}
+# Function for area of a circle 
+area_of_circle <- function(r){
+  return(pi * r^2)
+}
+```
+
+```{r}
+# Example of using the function 
+area_of_circle(r = 10)
+```
+
+
+
+#### A. Vectorized 
+```{r}
+start = Sys.time()
+
+areas_method1 = area_of_circle(radii)
+
+end = Sys.time()
+
+end - start 
+```
+
+#### B. sapply() 
+```{r}
+start = Sys.time()
+
+areas_method2 = sapply(radii, area_of_circle) 
+
+end = Sys.time()
+
+end - start 
+```
+
+#### C. for loop 
+```{r}
+start = Sys.time()
+
+areas_method3 = vector(mode = 'numeric', length = length(radii))
+
+for (i in 1:length(radii)){
+  areas_method3[i] = area_of_circle(radii[i])
+}
+end = Sys.time()
+
+end - start 
+```
+
+
+To summarize: 
+
+- vectorized code is faster than sapply() and for loops 
+
+- for loops and sapply() are similar in speed, depending on the length of the vector and the task 
+
+- for loops completes same task in multiple lines of code, vectorization & sapply in 1 line of code so you might want to use an apply family function for clarigy 
+
+Let's explore with examples. 
+
+### 4. Looping over a vector or list: sapply() or lapply()
+
+```{r}
+tv_data = read.csv('IMDb_Economist_tv_ratings.csv', stringsAsFactors = FALSE)
+```
+
+```{r}
+max_season = rep(NA, length(unique(tv_data$title)))
+for (i in 1:length(unique(tv_data$title))){
+  show = unique(tv_data$title)[i]
+  max_season[i] = (max(tv_data$seasonNumber[tv_data$title == show]))
+}
+names(max_season) = unique(tv_data$title)
 
 ```
+
+```{r}
+max_season = sapply(unique(tv_data$title), function(show){
+  max(tv_data$seasonNumber[tv_data$title == show])
+})
+
+
+#hist(max_season, breaks = seq(0,45,1))
+```
+
+#### can output a vector 
+```{r}
+max_season = sapply(unique(tv_data$title), function(show){
+  max(tv_data$seasonNumber[tv_data$title == show])
+})
+
+head(max_season)
+#hist(max_season, breaks = seq(0,45,1))
+```
+
+### can output a list 
+```{r}
+avg_rating_per_show = sapply(unique(tv_data$title), function(show){
+  tv_data$av_rating[tv_data$title == show]
+})
+head(avg_rating_per_show)
+```
+
+### can output a matrix 
+subset on those with 2 seasons: 
+```{r}
+num_seasons = sapply(unique(tv_data$title), function(show){
+  length(tv_data$seasonNumber[tv_data$title == show])
+})
+```
+
+```{r}
+two_seasons = unique(tv_data$title)[num_seasons == 2]
+avg_rating_two_seasons = sapply(two_seasons, function(show){
+  (tv_data$av_rating[tv_data$title == show])
+})
+
+avg_rating_two_seasons
+```
+
+### Can control output with lapply()
+lapply() will always output a list! 
+```{r}
+avg_rating_two_seasons = lapply(two_seasons, function(show){
+  (tv_data$av_rating[tv_data$title == show])
+})
+
+head(avg_rating_two_seasons)
+```
+
+
+### Use tapply() to summarize data 
+```{r}
+avg_rating_per_title = tapply(tv_data$av_rating, tv_data$title, mean)
+head(avg_rating_per_title)
+```
+
+### 5. Looping over a matrix/data.frame: apply()
+#### Growth curve example 
+
+```{r}
+growth = read.csv('mock_growth_curve_data.csv', row.names = 1)
+```
+
+Taking the mean at each timepoint 
+```{r}
+apply(growth, 1, mean)
+```
+
+Plotting with apply
+```{r}
+plot(row.names(growth), growth$Well1, type = 'l')
+apply(growth, 2, function(col){
+  lines(row.names(growth), col)
+})
+```
+
+### 6. Faster looping with future.apply 
+Here's a [Data Camp tutorial](https://campus.datacamp.com/courses/parallel-programming-in-r/foreach-futureapply-and-load-balancing?ex=9) to learn more about paralell programming in R -- specifically future and future.apply()
+
+
+
+
+
+
+
+
 
