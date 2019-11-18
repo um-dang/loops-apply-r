@@ -12,9 +12,9 @@ IMDb_Economist_tv_ratings.csv courtesy of [tidytuesday](https://github.com/rford
 
 Inspired by [this post](http://clarkfitzg.github.io/2017/11/06/are-apply-functions-faster-than-for-loops/)
 
-## 4. Looping over a vector or list: sapply() or lapply()
+### 4. Looping over a vector or list: sapply() or lapply()
 
-## 5. Looping over a matrix/data.frame: apply()
+### 5. Looping over a matrix/data.frame: apply()
 
-## 6. Faster looping with future.apply 
-Here's a (Data Camp tutorial)[https://campus.datacamp.com/courses/parallel-programming-in-r/foreach-futureapply-and-load-balancing?ex=9] to learn more about paralell program in R -- specifically future and future.apply()
+### 6. Faster looping with future.apply 
+Here's a [Data Camp tutorial](https://campus.datacamp.com/courses/parallel-programming-in-r/foreach-futureapply-and-load-balancing?ex=9) to learn more about paralell program in R -- specifically future and future.apply()
