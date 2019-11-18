@@ -2,6 +2,8 @@
 
 IMDb_Economist_tv_ratings.csv courtesy of [tidytuesday](https://github.com/rfordatascience/tidytuesday/blob/master/data/2019/2019-01-08/readme.md)
 
+View the rendered RMarkdown as HTML [here](https://um-dang.github.io/loops-apply-r/for_loops_and_apply_fam_master.html).
+
 ## Overview of lesson 
 
 ### 1. R basics - vectors, matrices, lists, logicals 
