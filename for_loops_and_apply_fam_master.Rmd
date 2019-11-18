@@ -14,12 +14,17 @@ knitr::opts_chunk$set(echo = TRUE)
 #### A. Vectors - 1D arrays: 
 
 ##### Initialize a vector 
+Two examples of how to initialize a vector 
 ```{r}
 my_vec = c(1,2,3,4,5,6,7,8,9,10)
+my_vec
+
 my_vec = 1:10 
+my_vec
 ```
 
 ##### Initialize an empty vector 
+How to initialize an empty vector, to store things in later 
 ```{r}
 my_vec = vector(mode = 'numeric', length = 10 )
 my_vec
@@ -28,42 +33,63 @@ my_vec
 #### B. Matrices/data frames - 2D arrays: 
 
 ##### Initialize a matrix
+Initialize a matrix called my_mat
 ```{r}
 my_mat = matrix(1:10, ncol = 2, nrow = 5)
 my_mat
+class(my_mat)
+```
 
+Name the rows and columns using colnames() and row.names()
+```{r}
 colnames(my_mat) = c('A', 'B')
 row.names(my_mat) = c('Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5')
 
 my_mat 
+```
 
-# dimensions of my_mat
+Get the dimensions of my_mat. Dimensions are reported as c(row, column) where numbers of rows in the first bin, and number of columns in the second bin
+```{r}
 dim(my_mat)
+```
 
-#column names of my_mat 
+Can also ask for the number of rows and number of columns directly with ncol() and nrow()
+```{r}
+ncol(my_mat)
+nrow(my_mat)
+```
+
+Can see the column names and row names of my_mat with rownames() and colnames()
+```{r}
+#get the column names of my_mat 
 colnames(my_mat)
 
-#row names of my_mat
+#get the row names of my_mat
 rownames(my_mat)
 ```
 
 ##### Access rows/columns in matrices 
-my_mat[row, column]
+Format is: my_mat[row, column]
+
+Can access with numeric indices 
 ```{r}
 # row 2, column 1
 my_mat[2,1]
 ```
 
+Can access with row names and column names 
 ```{r}
 # row 2, column 1
 my_mat['Sample2','A']
 ```
 
+Get all rows, 2nd column. Don't specify a row, just use a comma
 ```{r}
 # all rows, 2nd column
 my_mat[,2]
 ```
 
+Get all columns, 1st row. Don't specify a column, just use a comma
 ```{r}
 # all columns, 1st row
 my_mat[1,]
@@ -71,17 +97,20 @@ my_mat[1,]
 
 ##### C. Data frames 
 
+Initialize a data frame 
 ```{r}
 my_df = data.frame(A = c(1,2,3,4,5), B = c(6,7,8,9,10), row.names = c('Sample1', 'Sample2', 'Sample3', 'Sample4', 'Sample5'))
 
 my_df
 
+# get the class -- data.frame 
 class(my_df)
 ```
 
-Indexing dataframes is the same, but you can also index the columns using the $ 
+Indexing dataframes is the same as matrices, but you can also index the columns using the $. 
+
+3 ways to access column A, the first column 
 ```{r}
-# 3 ways to access column A 
 my_df[,'A']
 my_df[,1]
 my_df$A #can't do this with matrices! 
@@ -89,43 +118,76 @@ my_df$A #can't do this with matrices!
 
 #### D. Lists
 Each element of a list can contain vectors, matrices, lists, etc. of any shape or size. 
+
+Here, we have a list where the first element will be a vector, the second is a matrix, and the third is a data.frame 
 ```{r}
 my_list = list(my_vec, my_mat, my_df)
+
+my_list
 ```
 
 ##### Accessing element of a list 
+Use double square brackets to access a list element. Here, we're accessing the first element of my_list.
 ```{r}
 my_list[[1]]
 ```
 
+
+##### Acess content with a list element 
+
+Access the second element of the list  
+```{r}
+my_list[[2]]
+```
+
+Then you can subset it with matrix subsetting (since its a matrix)
+```{r}
+my_list[[2]][1,1]
+my_list[[2]]['Sample1','A']
+```
+
 ##### Subsetting a list
+Subset a list with single square brackets. This will make your list a length of 2 -- containing only the 1st and 3rd elements of my_list()
+
 ```{r}
 my_list[c(1,3)]
 ```
 
 
+#### E. Subsetting a data frame with logicals 
 
-
-#### E. Subsetting with logicals 
+Say, your samples in my_df came from the following sources: either dog or cat as such. 
 ```{r}
 sample_source = c('cat', 'dog', 'cat', 'cat', 'dog')
+```
+
+See how the length of sample_source is the same as the number of rows in my_df -- as each sample is either from "dog" or "cat"
+```{r}
 length(sample_source)
 dim(my_df)
 ```
+
+Create a logical vector -- ask "where does sample source equal cat". Will give TRUE when sample_source is cat and FALSE when sample_source is dog.
 
 ```{r}
 sample_source == 'cat'
 ```
 
+See that the class is a logical 
+```{r}
+class(sample_source == 'cat')
+```
+
+We can subset the column 'A' in my_df on cat samples using the logical vector. 
 ```{r}
 my_df$A[sample_source == 'cat']
 ```
 
+Similarily, we can subset my_df on the dog samples using another logical vector -- and use comma to indicate we want all the columns. 
 ```{r}
 my_df[sample_source == 'dog',]
 ```
 
-Often, you won't be initializing matrices and dataframes, but rather, reading them in from an excel or csv. 
 
 
 ### 2. Iterating through vectors and matrices with for loops 
@@ -233,7 +295,7 @@ Let's explore with examples.
 ### 4. Looping over a vector or list: sapply() or lapply()
 
 ```{r}
-tv_data = read.csv('IMDb_Economist_tv_ratings.csv', stringsAsFactors = FALSE)
+tv_data = read.csv('data/IMDb_Economist_tv_ratings.csv', stringsAsFactors = FALSE)
 ```
 
 ```{r}
@@ -311,7 +373,7 @@ head(avg_rating_per_title)
 #### Growth curve example 
 
 ```{r}
-growth = read.csv('mock_growth_curve_data.csv', row.names = 1)
+growth = read.csv('data/mock_growth_curve_data.csv', row.names = 1)
 ```
 
 Taking the mean at each timepoint 
