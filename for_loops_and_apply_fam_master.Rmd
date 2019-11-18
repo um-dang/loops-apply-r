@@ -267,11 +267,13 @@ apply(my_mat, 1, mean)
 
 ### 3. Vectorized vs. sapply vs. for loop 
 
+Say we have 100,000 circle radii (1-100,000) and we want to calculate the area of each circle. 
 ```{r}
 # Vector of circle radii 
 radii = 1:100000
 ```
 
+Here's our function to calculate the area of a circle: 
 ```{r}
 # Function for area of a circle 
 area_of_circle <- function(r){
@@ -279,6 +281,7 @@ area_of_circle <- function(r){
 }
 ```
 
+Here's an example of running our function on one radius -- a radius of 10 
 ```{r}
 # Example of using the function 
 area_of_circle(r = 10)
@@ -286,8 +289,9 @@ area_of_circle(r = 10)
 
 
 
- 
+Let's see how much time it takes to use 1) vectorized R code 2) sapply() statement versus 3) a for loop. We'll run it N times to compare the trends. 
 ```{r}
+# initialize vectors to store run time 
 repeats = 40
 time_vec = vector('numeric', length = repeats)
 time_sapply = vector('numeric', length = repeats)
@@ -367,66 +371,96 @@ Let's explore with examples.
 
 ### 4. Looping over a vector or list: sapply() or lapply()
 
+Read in TV ratings data 
 ```{r}
 tv_data = read.csv('data/IMDb_Economist_tv_ratings.csv', stringsAsFactors = FALSE)
 ```
 
+Let's take a look at the TV ratings data 
 ```{r}
-max_season = rep(NA, length(unique(tv_data$title)))
+head(tv_data, 15)
+```
+
+Say we wanted to figure out what the max number of seasons was for each show. We could approach this with a for loop or an sapply. Let's do both and compare. 
+
+For loop. 
+```{r}
+#initialize vector to store max season number in
+max_season = rep(NA, length(unique(tv_data$title))) 
+
+# loop through indices 1 to length of the unique TV show titles 
+  # access the show name (show)
+  # get all the seasons for the show (all_season_numbers)
+  # get the max season number and store in max_season[index]
+
+#name storage vector to be the show title 
 for (i in 1:length(unique(tv_data$title))){
   show = unique(tv_data$title)[i]
-  max_season[i] = (max(tv_data$seasonNumber[tv_data$title == show]))
+  all_season_numbers = tv_data$seasonNumber[tv_data$title == show]
+  max_season[i] = max(all_season_numbers)
 }
 names(max_season) = unique(tv_data$title)
 
 ```
 
 ```{r}
-max_season = sapply(unique(tv_data$title), function(show){
-  max(tv_data$seasonNumber[tv_data$title == show])
-})
-
-
-#hist(max_season, breaks = seq(0,45,1))
+head(max_season)
 ```
 
-#### can output a vector 
+sapply version 
 ```{r}
 max_season = sapply(unique(tv_data$title), function(show){
-  max(tv_data$seasonNumber[tv_data$title == show])
+   all_season_numbers = tv_data$seasonNumber[tv_data$title == show]
+   max(all_season_numbers)
 })
 
 head(max_season)
-#hist(max_season, breaks = seq(0,45,1))
 ```
 
-### can output a list 
+```{r}
+head(max_season)
+```
+#### sapply() will output your data in the simplest form it can. Here, we see if outputted a vector because we were trying to access 1 value (the max season number) from each tv show title
+
+
+```{r}
+hist(max_season, breaks = seq(0,45,1), main = 'Number of seasons per show', xlab = 'Number of seasons')
+```
+
+#### Let's explore some other ways sapply() can output your data. Here, let's find the average rating of each season of a show 
 ```{r}
 avg_rating_per_show = sapply(unique(tv_data$title), function(show){
   tv_data$av_rating[tv_data$title == show]
 })
 head(avg_rating_per_show)
 ```
+#### You can see sapply() outputted a list because each tv show had a variable number of seasons and thus a variable number of ratings. Thus, the simplest data structure was a list. 
 
-### can output a matrix 
-subset on those with 2 seasons: 
+#### Let's look at anther example -- Here, we will first subset on those with 2 seasons (or rather, 2 entries in the dataset):
+
+Use an sapply() to figure out how many seasons/entries each show has 
 ```{r}
 num_seasons = sapply(unique(tv_data$title), function(show){
   length(tv_data$seasonNumber[tv_data$title == show])
 })
 ```
 
+Subset on the show titles with 2 seasons/entries 
 ```{r}
 two_seasons = unique(tv_data$title)[num_seasons == 2]
+```
+
+Find the average rating for the shows with two seasons 
+```{r}
 avg_rating_two_seasons = sapply(two_seasons, function(show){
   (tv_data$av_rating[tv_data$title == show])
 })
 
 avg_rating_two_seasons
 ```
+#### Because every show had 2 data points, a matrix was the simplest output 
 
-### Can control output with lapply()
-lapply() will always output a list! 
+#### We can control output with lapply() -- lapply() will ALWAYS output a list. 
 ```{r}
 avg_rating_two_seasons = lapply(two_seasons, function(show){
   (tv_data$av_rating[tv_data$title == show])
@@ -436,7 +470,8 @@ head(avg_rating_two_seasons)
 ```
 
 
-### Use tapply() to summarize data 
+### We can use tapply() to summarize data 
+Here, we want to know what is the average rating per show across all seasaons 
 ```{r}
 avg_rating_per_title = tapply(tv_data$av_rating, tv_data$title, mean)
 head(avg_rating_per_title)
