@@ -414,13 +414,13 @@ max_season = sapply(unique(tv_data$title), function(show){
    max(all_season_numbers)
 })
 
-head(max_season)
 ```
+
+#### sapply() will output your data in the simplest form it can. Here, we see if outputted a vector because we were trying to access 1 value (the max season number) from each tv show title
 
 ```{r}
 head(max_season)
 ```
-#### sapply() will output your data in the simplest form it can. Here, we see if outputted a vector because we were trying to access 1 value (the max season number) from each tv show title
 
 
 ```{r}
@@ -434,7 +434,9 @@ avg_rating_per_show = sapply(unique(tv_data$title), function(show){
 })
 head(avg_rating_per_show)
 ```
+
 #### You can see sapply() outputted a list because each tv show had a variable number of seasons and thus a variable number of ratings. Thus, the simplest data structure was a list. 
+
 
 #### Let's look at anther example -- Here, we will first subset on those with 2 seasons (or rather, 2 entries in the dataset):
 
@@ -456,7 +458,7 @@ avg_rating_two_seasons = sapply(two_seasons, function(show){
   (tv_data$av_rating[tv_data$title == show])
 })
 
-avg_rating_two_seasons
+head(t(avg_rating_two_seasons))
 ```
 #### Because every show had 2 data points, a matrix was the simplest output 
 
