@@ -189,8 +189,9 @@ my_df[sample_source == 'dog',]
 ```
 
 
+### 2.1 Iterating through vectors 
 
-### 2. Iterating through vectors and matrices with for loops 
+### 2.1.1 Iterating through vectors with for loops 
 #### A. Structure of a for loop 
 
 for (thing in sequence){
@@ -201,26 +202,66 @@ for (thing in sequence){
 
 #### B. Examples 
 
+Initialize vector of colors 
 ```{r}
 colors = c('red', 'blue', 'green')
 ```
 
-Iterating through a vector 
+Create function my_fav_col() which takes as input a string and outputs another string "My favorite color is ____"
+```{r}
+my_fav_col <- function(color){
+  return(paste('My favorite color is', color))
+}
+```
+
+
+Iterating through indexing 
 ```{r}
 for (i in 1:length(colors)){ 
 
-  print(colors[i])
+  print( my_fav_col(colors[i]) )
   
 }
 ```
 
-Iterating through indexing 
+Iterating through a vector called colors 
 ```{r}
 for (thing in colors){ 
 
-  print(thing)
+  print( my_fav_col(thing) )
   
 }
+```
+
+### 2.1.2 Iterating through vectors with sapply()
+
+Pass each element of colors to our function, my_fav_col
+
+```{r}
+sapply(colors, my_fav_col)
+```
+
+### 2.2 Iterating through matrices 
+
+Recall my_mat 
+```{r}
+my_mat
+```
+
+Our goal is to get the mean of each row. Let's do so with both a for loop (2.2.1) and an apply statement (2.2.2)
+
+### 2.2.1. Iterating through MATRICES with for loops 
+
+```{r}
+for (i in 1:nrow(my_mat)){
+  row = my_mat[i,]
+  print(mean(row))
+}
+```
+
+### 2.2.2. Iterating through MATRICES with apply()
+```{r}
+apply(my_mat, 1, mean)
 ```
 
 
@@ -245,40 +286,72 @@ area_of_circle(r = 10)
 
 
 
-#### A. Vectorized 
+ 
 ```{r}
-start = Sys.time()
+repeats = 40
+time_vec = vector('numeric', length = repeats)
+time_sapply = vector('numeric', length = repeats)
+time_for = vector('numeric', length = repeats)
 
-areas_method1 = area_of_circle(radii)
-
-end = Sys.time()
-
-end - start 
 ```
+
+#### A. Vectorized
+```{r}
+for (i in 1:repeats){
+
+  start = Sys.time()
+  areas_method1 = area_of_circle(radii)
+  end = Sys.time()
+  
+  time_vec[i] = as.numeric(end - start)
+}
+```
+
+
 
 #### B. sapply() 
 ```{r}
-start = Sys.time()
+for (i in 1:repeats){
+  
+  start = Sys.time()
+  areas_method2 = sapply(radii, area_of_circle) 
+  end = Sys.time()
+  
+  time_sapply[i] = as.numeric(end - start)
+}
 
-areas_method2 = sapply(radii, area_of_circle) 
-
-end = Sys.time()
-
-end - start 
 ```
 
 #### C. for loop 
 ```{r}
-start = Sys.time()
 
-areas_method3 = vector(mode = 'numeric', length = length(radii))
+for (j in 1:repeats){
+  
+  start = Sys.time()
+  
+  areas_method3 = vector(mode = 'numeric', length = length(radii))
+  
+  for (i in 1:length(radii)){
+    areas_method3[i] = area_of_circle(radii[i])
+    }
+  
+  end = Sys.time()
 
-for (i in 1:length(radii)){
-  areas_method3[i] = area_of_circle(radii[i])
+  time_for[j] = as.numeric(end - start)
 }
-end = Sys.time()
 
-end - start 
+```
+
+#### D. Comparing speed for vectorized code, for loop, apply
+```{r}
+max_val = max(c(time_vec, time_sapply, time_for)) + 0.01
+
+hist(time_vec, col = rgb(1,0,0,0.5), breaks = seq(0,max_val, 0.01), xlim = c(0,max_val), 
+     main = 'Comparing speed for vectorized code, for loop, apply', xlab = 'Run time (seconds)')
+hist(time_sapply, col = rgb(0,1,0,0.5), breaks = seq(0,max_val, 0.01),add = TRUE)
+hist(time_for, col = rgb(0,0,1,0.5), breaks = seq(0,max_val, 0.01),add = TRUE)
+legend('topright', fill = c('red', 'green', 'blue'), legend = c('vectorized', 'sapply', 'for loop'))
+
 ```
 
 
@@ -286,7 +359,7 @@ To summarize:
 
 - vectorized code is faster than sapply() and for loops 
 
-- for loops and sapply() are similar in speed, depending on the length of the vector and the task 
+- for loops and sapply() are similar in speed, depending on the length of the vector and the task
 
 - for loops completes same task in multiple lines of code, vectorization & sapply in 1 line of code so you might want to use an apply family function for clarigy 
 
